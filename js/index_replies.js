@@ -168,8 +168,7 @@ async function displayTweetForAnnotate(tweet_id_) {
              }  
        }
       //  tab +=`<br/>`
-       document.getElementById("comments_replies").innerHTML = tab;
-       
+      document.getElementById("comments_replies").innerHTML = tab;
       }
       
       
