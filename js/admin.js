@@ -5,7 +5,7 @@ async function show_tweets_index() {
     const response = await fetch(url, {
 	  method: 'GET',
         headers: {
-                'Content-type': 'application/json',
+            'Content-type': 'application/json',
 		    "Authorization": 'Bearer '+localStorage.getItem("token")
            }
     });
@@ -41,9 +41,12 @@ async function show_tweets_index() {
             }
 	})
 	
-	user = await users.json();
+	user_ = await users.json();
+    user=user_.data
     data = await responce.json();
     console.log(user)
+    // var token=localStorage.getItem("token")
+    // console.log(token)
     if (responce.status === 200) {
         tweet_data = data.data;
         console.log(tweet_data)
@@ -56,17 +59,17 @@ async function show_tweets_index() {
             <th scope="row" class="align-middle">${tweet_data[key].story}</th>
             <td class="align-middle">${tweet_data[key].tweet_id}</td>
             <td class="w-50" class="align-middle">${tweet_data[key].tweet}</td>`
-            assigned_to = tweet_data[key].assigned_to;
+            assigned_to = tweet_data[key].assignedTo;
             list_for_select = []
             for (usr in user) {
-                if (!(assigned_to.includes(users[usr]._id))) {
-                    list_for_select.push({ 'name': users[usr]._id });
+                if (!(assigned_to.includes(user[usr].name))) {
+                    list_for_select.push({ 'name': user[usr].name});
                 }
             }
             //console.log(list_for_select);
             count = 0;
             for (u in assigned_to) {
-                if (tweet_data[key].annotated_by.includes(assigned_to[u])) {
+                if (tweet_data[key].annotatedBy.includes(assigned_to[u])) {
                     tab += `<td class="align-middle text-success"><i class="fas fa-check-circle mr-1"></i>${assigned_to[u]}</td>`
                 } else {
                     tab += `<td class="align-middle text-danger"><i class="fas fa-clock mr-1"></i>${assigned_to[u]}</td>`
@@ -78,8 +81,8 @@ async function show_tweets_index() {
                 select_options += `<option value="${list_for_select[k].name}">${list_for_select[k].name}</option>`
             }
 
-            if (assigned_to.length < 3) {
-                while (count < 3) {
+            if (assigned_to.length < 4) {
+                while (count < 4) {
                     tab += `<td class="align-middle"><select form="${form_id}" class="form-select" name="${count}" aria-label="Default select example">
                     <option selected hidden>Select User</option>${select_options}</select></td>`
                     count += 1
@@ -107,14 +110,21 @@ async function assign_users(id) {
     }
     let filtered_userList = filtered = userList.filter(function(str) { return !str.includes('Select User'); });
     userSet = new Set(filtered_userList)
+
+    
+
     if (filtered_userList.length === userSet.size) {
-        fetch(proxy + '/api/index', {
+        if (filtered_userList.length === 1) {
+        console.log(userSet)
+        console.log(filtered_userList)
+        fetch(proxy + '/tweets/assign', {
             method: 'post',
-            body: JSON.stringify({ 'tweet_id': id, 'users_assigned': filtered_userList }),
+            body: JSON.stringify({ 'tweet_id': id, 'name': filtered_userList[0],"thirdAnnotator": false }),
             headers: {
                 'Content-type': 'application/json',
-                "x-access-token": localStorage.getItem("token")
+                "Authorization": 'Bearer '+localStorage.getItem("token")
             }
+        
         }).then(responce => {
             if (responce.status === 200) {
                 Swal.fire({
@@ -123,15 +133,26 @@ async function assign_users(id) {
                     timer: 2000
                 })
                 show_tweets_index();
-            } else if (responce.status === 401) {
-                window.location.href = 'login.html';
+            } else if (responce.status === 500) {
+                Swal.fire({
+                    title: 'Please enter single user at a time',
+                    icon: 'error',
+                    timer: 4000
+                })
+            }else{
+                window.location.href = 'Login.html';
             }
-        })
+        })}else{
+            alert('Please enter single user at a time')
+            show_tweets_index();
+        }
     } else {
         alert('cannot be same')
     }
-
 }
+        
+
+// }
 
 
 ///// show stories
@@ -195,16 +216,9 @@ async function add_story() {
                 })
                 showStories();
                 document.getElementById('new_story_name').value = '';
-            } else if (response.status === 401) {
-                window.location.href = 'login.html';
-            } else if (response.status === 403) {
-                Swal.fire({
-                    title: '! Cannot add same story again !!!',
-                    icon: 'warning'
-                })
             } else if (response.status === 400) {
                 Swal.fire({
-                    title: 'Bad Request!!!',
+                    title: 'Story with this title already exists',
                     icon: 'error'
                 })
             } else {
@@ -225,6 +239,20 @@ async function add_story() {
 ////// FIlter Tweets
 async function filter_tweets() {
     //console.log('changed')
+    loader=` <h4>
+                <span class="align-middle">
+                <tr>  
+                <td colspan="7"> 
+                    <div class="d-flex justify-content-center">
+                    <div class="spinner-border" style="width: 10rem; height: 10rem;" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    </div>
+                </td>
+                </tr>
+                </span>
+            </h4>`
+    document.getElementById('tweet_data_body').innerHTML = loader;
     var story_name_ = document.getElementById("filter_story_list").value;
 	console.log(document.getElementById("filter_story_list").value)
     url = proxy + '/tweets/list';
@@ -238,17 +266,148 @@ async function filter_tweets() {
 	})
     data = await responce.json();
     //console.log(data)
+    const users = await fetch(proxy+'/users/list', {
+        method: 'GET',
+        headers: {
+        'Content-type': 'application/json',
+        "Authorization": 'Bearer '+localStorage.getItem("token")
+        }
+    })
+
+    user_ = await users.json();
+    user=user_.data
     if (responce.status === 200) {
         tweet_data = data.data;
         console.log(tweet_data)
+        let tab = '';
+        for (key in tweet_data) {
+            form_id = 'form_' + tweet_data[key].tweet_id;
+            tab += `<form id="${form_id}"><tr>
+            <th scope="row" class="align-middle">${tweet_data[key].story}</th>
+            <td class="align-middle">${tweet_data[key].tweet_id}</td>
+            <td class="w-50" class="align-middle">${tweet_data[key].tweet}</td>`
+            assigned_to = tweet_data[key].assignedTo;
+            //console.log(assigned_to)
+            list_for_select = []
+            for (usr in user) {
+                if (!(assigned_to.includes(user[usr].name))) {
+                    list_for_select.push({ 'name': user[usr].name, 'id': user[usr]._id });
+                }
+            }
+            //console.log(list_for_select);
+            count = 0;
+            for (u in assigned_to) {
+                if (tweet_data[key].annotatedBy.includes(assigned_to[u])) {
+                    tab += `<td class="align-middle text-success"><i class="fas fa-check-circle mr-1"></i>${assigned_to[u]}</td>`
+                } else {
+                    tab += `<td class="align-middle text-danger"><i class="fas fa-clock mr-1"></i>${assigned_to[u]}</td>`
+                }
+                count += 1;
+            }
+            select_options = '';
+            for (k in list_for_select) {
+                select_options += `<option value="${list_for_select[k].name}">${list_for_select[k].name}</option>`
+            }
+
+            if (assigned_to.length < 4) {
+                while (count < 4) {
+                    tab += `<td class="align-middle"><select form="${form_id}" class="form-select" name="${count}" aria-label="Default select example">
+                    <option selected selected hidden>Select User</option>${select_options}</select></td>`
+                    count += 1
+                }
+                tab += `<td class="align-middle"><button type="submit" class="btn btn-outline-primary" id="${tweet_data[key].tweet_id}" onclick="assign_users(this.id)">ASSIGN</button></td></tr></form>`
+            } else {
+                tab += `<td class="align-middle"></td></tr></form>`
+            }
+
+
+        }
+        document.getElementById('tweet_data_body').innerHTML = tab;
+    } else {
+        document.getElementById('tweet_data_body').innerHTML = `<h1 class="mt-5">No Tweets Found</h1>`;
+    }
         
 }
 	
 	
-	
+async function add_tweets() {
+    const url = proxy + '/story/list';
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-type': 'application/json',
+		    "Authorization": 'Bearer '+localStorage.getItem("token")
+           }
+    });
+    if (response.status === 200) {
+        var data = await response.json();
+        stories = data.data;
+        //console.log(stories)
+        select_option = '<option value="" selected hidden>Select Story</option>'
+        for (key in stories) {
+            select_option += `<option value="${stories[key].title}">${stories[key].title}</option>`
+        }
+    } else if (response.status === 401) {
+        window.location.href = 'login.html'
+    } else {
+        alert('network error')
+    }
+    let select_box_html = `<select id="story_name_for_tweet" class="swal2-input">${select_option}</select>`
+    Swal.fire({
+        title: 'Add Tweet File',
+        html: `${select_box_html}<input type="file" id="file" class="swal2-input" placeholder="file" multiple>`,
+        confirmButtonText: 'SUBMIT',
+        focusConfirm: false,
+        preConfirm: () => {
+            var input = document.getElementById("file");
+            var sel = document.getElementById("story_name_for_tweet")
+            var opt = sel.options[sel.selectedIndex];
+            let story_name = opt.value;
+            if (input.files && input.files[0]) {
+                const formData = new FormData();
+                for (const file of input.files) {
+                    formData.append('files', file)
+                }
+                //let myFile = input.files[0]
+                //formData.append('file', myFile);
+                formData.append('story', story_name);
+                console.log(input.files)
+                    //console.log(story_name)
+                    
+                return fetch(proxy + `/tweets/add`, {
+                        method:'POST',
+                        headers: {
+                        'Authorization': `Bearer `+localStorage.getItem("token"),
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        //console.log(response)
+                        if (response.status === 400) {
+                            throw new Error(response.statusText)
+                        }
+                        return response.json()
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Request failed: ${error} Story is mandatory and Upload proper files`
+                        )
+                    })
+            }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'tweet Added Successfully!',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            })
+            show_tweets_index();
+        }
+    })
 }
-
-
 {/*
 proxy = 'http://3.87.187.229:5000';
 
@@ -459,87 +618,7 @@ async function add_story() {
 
 //////  ADD tweet
 
-async function add_tweets() {
-	const url = proxy + '/story/list';
-    const response = await fetch(url, {
-	  method: 'GET',
-        headers: {
-                'Content-type': 'application/json',
-				"Authorization": 'Bearer '+localStorage.getItem("token")
-           }
-    });
-    if (response.status === 200) {
-        var data = await response.json();
-        stories = data.data;
-        console.log(data)
-        select_option = '<option value="" selected hidden>Select Story</option>'
-        for (key in stories) {
-            select_option += `<option value="${stories[key].title}">${stories[key].title}</option>`
-        }
-    } else if (response.status === 401) {
-        window.location.href = 'login.html'
-    } else {
-        alert('network error')
-    }
-    let select_box_html = `<select id="story_name_for_tweet" class="swal2-input">${select_option}</select>`
-    Swal.fire({
-        title: 'Add Tweet File',
-        html: `${select_box_html}<input type="file" id="file" accept=".json" class="swal2-input" placeholder="file" multiple>`,
-        confirmButtonText: 'SUBMIT',
-        focusConfirm: false,
-        preConfirm: () => {
-            var input = document.getElementById("file");
-            var sel = document.getElementById("story_name_for_tweet").value
-	
-            var opt = sel.options[sel.selectedIndex];
-            let story_name = opt.value;
-			console.log(story_name)
-            if (input.files && input.files[0]) {
-                const formData = new FormData();
-                formData.append('story_name', story_name);
-				for (const file of input.files) {
-                    formData.append('files', file)
-                }
-                //let myFile = input.files[0]
-                //formData.append('file', myFile);
-                
-                console.log(input.files)
-                    //console.log(story_name)
-                return fetch(proxy + '/tweets/add', {
-                        method: 'post',
-                        body: formData,
-                        headers: {
-							'Content-Type': 'multipart/form-data',
-							'Authorization': 'Bearer '+localStorage.getItem("token")
-                        }
-                    })
-                    .then(response => {
-                        //console.log(response)
-                        if (response.status != 200) {
-                            throw new Error(response.statusText)
-                        }
-                        return response.json()
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(
-                            `Request failed: ${error}`
-                        )
-                    })
-            }
-        ,
-        allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'tweet Added Successfully!',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            })
-            show_tweets_index();
-        }
-    })
-};)}
+
 ////// FIlter Tweets
 async function filter_tweets() {
     //console.log('changed')

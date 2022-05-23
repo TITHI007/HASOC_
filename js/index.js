@@ -8,8 +8,9 @@ async function checkLogin() {
     var body = document.getElementById("body");
     body.style.display = 'none';
     url = proxy + '/login'
-    var token = document.getElementById("token");
-    if (typeof token === "undefined") {
+    var token = localStorage.getItem("token");
+    console.log(token)
+    if (!token) {
         window.location.href = 'Login.html';
     } else {
         //
@@ -64,7 +65,7 @@ async function displayTweetForAnnotate() {
                     <input class="form-check-input" onchange="addLabel(this.name,this.name,this.value)" type="radio" name="${data.data.tweets[i].tweet_id }" value="NONE" checked> NONE
                   </label>`
                   tab_1 += `<li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-primary">
-            <span class="w-90" id="main_tweet" >${data.data.tweets[i].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li> `
+            <span class="w-90" id="main_tweet">${data.data.tweets[i].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li> `
                 }
                 
             }
@@ -134,7 +135,7 @@ async function addLabel(id,tid, label) {
         async: true,
         success: function(response) {
             myparent = $('[name=' + tid + ']').parent().parent();
-            //console.log(myparent)
+            //console.log("----",myparent)
             if (label === "HOF") {
                 innerhtml = `<i class="mr-3 fa fa-check" aria-hidden="true"></i> <label class="btn btn-danger form-check-label mr-3">
             <input class="form-check-input" onchange="addLabel(this.name,this.name,this.value)" type="radio" name="${tid}" value="HOF" checked>

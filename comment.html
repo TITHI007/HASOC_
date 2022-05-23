@@ -23,6 +23,14 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+
+                    <div class="mx-3 text-white">
+                        <h5 class="row">
+                            <button class="btn btn-outline-white mr-3" data-toggle="modal" data-target="#tweets_by_user" data-toggle="tooltip" data-placement="top" title="Tap to view assigned tweets" onclick="display_tweets_by_user()">View Assigned Tweets</button>
+                        </h5>
+                    </div>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
                 </li>
@@ -52,7 +60,16 @@
         <!--------------------------------------- Main Tweet and comments ------------------------------------------->
         <ul class="list-group " id="main_tweet_comments">
             <div class="mb-3">
-                <li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend comment list-group-item-primary">
+                <h4>
+                    <span class="align-middle">
+                         <div class="d-flex justify-content-center">
+                         <div class="spinner-border" style="width: 10rem; height: 10rem;" role="status">
+                             <span class="sr-only">Loading...</span>
+                         </div>
+                         </div>
+                    </span>
+                   </h4>
+                <!-- <li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend comment list-group-item-primary">
                     <span class="comment w-90">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit nulla culpa adipisci, eligendi fugit perspiciatis magni tempora sequi quis doloremque magnam sit excepturi ipsa! Sed unde enim nulla ad corrupti?</span>
                     <div class="btn-group" data-toggle="buttons">
                         <label class="btn btn-danger form-check-label mr">
@@ -199,11 +216,107 @@
                   <input class="form-check-input" type="radio" name="options" id="option2" autocomplete="off"> NONE
                 </label>
                     </div>
-                </li>
+                </li> -->
             </div>
         </ul>
     </form>
 
+    <div class="modal fade bd-example-modal-lg" id="tweets_by_user" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bd-example-modal-lg">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <div class="container ">
+                        <!--    <div class="float-left font-weight-bold mx-3 ml-3 text-primary">Total: 500</div>
+                        <div class="float-left font-weight-bold text-success mr-3">Annotated: 310</div>
+                        <div class="float-left font-weight-bold text-danger">Panding: 190</div>-->
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <table class="table table-striped table-borderless">
+                        <thead>
+                            <tr>
+                                <th>Tweet Story </th>
+                                <th>Tweet ID</th>
+                                <th>Text</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="show_tweets_for_user">
+                            <!-- <tr>
+                                <td class="align-middle">US Covid</td>
+                                <td class="align-middle">4464641646</td>
+                                <td class="align-middle">hello world how are you Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro nulla, molestias distinctio illo ea ipsa. Ex nemo expedita voluptate dicta similique. Officiis, aut animi amet provident sint tempora
+                                    eligendi repellat!
+                                </td>
+                                <td class="align-middle">
+                                    <div class=" container justify-content-center"><i class="fas fa-check-circle mr-3 fa-2x"></i></div>
+                                </td>
+                                <td class="align-middle"><button class="btn btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">US Covid</td>
+                                <td class="align-middle">4464641646</td>
+                                <td class="align-middle">hello world how are you Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro nulla, molestias distinctio illo ea ipsa. Ex nemo expedita voluptate dicta similique. Officiis, aut animi amet provident sint tempora
+                                    eligendi repellat!
+                                </td>
+                                <td class="align-middle">
+                                    <div class=" container justify-content-center"><i class="fas fa-clock fa-2x"></i></div>
+                                </td>
+                                <td class="align-middle"><button class="btn btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">US Covid</td>
+                                <td class="align-middle">4464641646</td>
+                                <td class="align-middle">hello world how are you Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro nulla, molestias distinctio illo ea ipsa. Ex nemo expedita voluptate dicta similique. Officiis, aut animi amet provident sint tempora
+                                    eligendi repellat!
+                                </td>
+                                <td class="align-middle">
+                                    <div class=" container justify-content-center"><i class="fas fa-check-circle mr-3 fa-2x"></i></div>
+                                </td>
+                                <td class="align-middle"><button class="btn btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">US Covid</td>
+                                <td class="align-middle">4464641646</td>
+                                <td class="align-middle">hello world how are you Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro nulla, molestias distinctio illo ea ipsa. Ex nemo expedita voluptate dicta similique. Officiis, aut animi amet provident sint tempora
+                                    eligendi repellat!
+                                </td>
+                                <td class="align-middle">
+                                    <div class=" container justify-content-center"><i class="fas fa-clock fa-2x"></i></div>
+                                </td>
+                                <td class="align-middle"><button class="btn btn-info">View</button></td>
+                            </tr> -->
+                            <h4>
+                                <span class="align-middle">
+                                 <tr>  
+                                 <td colspan="4"> 
+                                     <div class="d-flex justify-content-center">
+                                     <div class="spinner-border" style="width: 10rem; height: 10rem;" role="status">
+                                         <span class="sr-only">Loading...</span>
+                                     </div>
+                                     </div>
+                                 </td>
+                                 </tr>
+                                </span>
+                               </h4>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer ">
+                    <button type="button " class="btn btn-danger " data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <br/>
     <br/>
     <!----------------------------------------------------------------------------------------------------------------------------------------->
