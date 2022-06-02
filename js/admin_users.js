@@ -1,4 +1,4 @@
-proxy = 'http://3.87.187.229:5000';
+proxy = 'https://englishannotation.el.r.appspot.com';
 
 async function add_user() {
     Swal.fire({

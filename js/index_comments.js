@@ -1,4 +1,4 @@
-proxy = 'http://3.87.187.229:5000';
+proxy = 'https://englishannotation.el.r.appspot.com';
 
 async function checkLogin() {
     var name = localStorage.getItem('name');
@@ -48,6 +48,7 @@ async function displayTweetForAnnotate(tweet_id_) {
             console.log(i)
             console.log(data.data.tweets[i].tweet_id)
 			console.log(data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)
+      // if (data.data.tweets[i].assignedTo.slice(0,2).includes(name)){
 			if ((data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)===true ){
 				
 				console.log(data.data.tweets[i].finalAnnotation[data.data.tweets[i].tweet_id])
@@ -147,12 +148,14 @@ async function displayTweetForAnnotate(tweet_id_) {
 
          }
          
-        }
+        }}
+        
         tab_1+=`<br/>`
         
     }
          document.getElementById("main_tweet_comments").innerHTML = tab_1;
-}}
+}
+// }
 // }
         // document.getElementById('top_tweet').innerHTML = tab_1;
 

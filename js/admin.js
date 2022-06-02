@@ -1,4 +1,4 @@
-proxy = 'http://3.87.187.229:5000';
+proxy = 'https://englishannotation.el.r.appspot.com';
 
 async function show_tweets_index() {
     const url = proxy + '/story/list';
@@ -409,7 +409,7 @@ async function add_tweets() {
     })
 }
 {/*
-proxy = 'http://3.87.187.229:5000';
+proxy = 'https://englishannotation.el.r.appspot.com';
 
 async function show_tweets_index() {
     url = proxy + '/tweets/list';
