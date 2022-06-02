@@ -42,6 +42,18 @@ async function displayTweetForAnnotate(tweet_id_) {
             // console.log(data)
             const total_tweet =data.data.tweets.length
             // console.log(datas)
+            // for(let i=0;i<total_tweet;i++){
+            //   if (data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation){
+            //     continue
+            //   }else{
+            //     Swal.fire({
+            //       icon: 'info',
+            //       title: 'Annotation',
+            //       text: 'Complete Main Tweet annotations',
+            //       footer: '<a href="./index.html">Head back to Main Tweet</a>'
+            //     })
+            //   }
+            // }
             tab_1 = ``
          var i=data.data.tweets.map((o) => o.tweet_id).indexOf(tweet_id_)
             console.log(tweet_id_)
@@ -250,6 +262,7 @@ async function display_tweets_by_user() {
           //console.log(data)
           tab = ``
           for (let i=0;i<total_tweet;i++) {
+            if (data.data.tweets[i].assignedTo.slice(0,2).includes(name)){
             if ((data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)===true){
                   tab += `<tr>
           <td class="align-middle">${data.data.tweets[i].story}</td>
@@ -273,9 +286,58 @@ async function display_tweets_by_user() {
                   tab += icon
                   tab += btn
               }
+            }  }
 
-          }
+            tab+=`<tr><td colspan="5"><h2 align="center">Third Annotation</h2></td></tr>`
+            for (let i=0;i<total_tweet;i++) {
+            if (data.data.tweets[i].assignedTo.slice(2,3).includes(name)){
+              
+              for(let j=0;j<data.data.tweets[i].comments.length;j++){
+                if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments.tweet_id in data.data.tweets[i].finalAnnotation)===false)){
+                  tab += `<tr>
+                  <td class="align-middle">${data.data.tweets[i].story}</td>
+                  <td class="align-middle">${data.data.tweets[i].tweet_id}</td>
+                  <td class="align-middle">${data.data.tweets[i].tweet}</td>
+                  <td class="align-middle">
+                    <div class=" container justify-content-center">`
+                    icon = `<i class="fas fa-clock fa-2x"></i>`
 
+                  btn = `</i></div></td>
+                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="displayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
+                  </tr>`
+                  // }
+                  tab += icon
+                  tab += btn
+                  break
+                }
+
+              }
+            }}
+            tab+=`<tr><td colspan="5"><h2 align="center">Fourth Annotation</h2></td></tr>`
+            for (let i=0;i<total_tweet;i++) {
+            if (data.data.tweets[i].assignedTo.slice(3,4).includes(name)){
+              
+              for(let j=0;j<data.data.tweets[i].comments.length;j++){
+                if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments.tweet_id in data.data.tweets[i].finalAnnotation)===false)){
+                  tab += `<tr>
+                  <td class="align-middle">${data.data.tweets[i].story}</td>
+                  <td class="align-middle">${data.data.tweets[i].tweet_id}</td>
+                  <td class="align-middle">${data.data.tweets[i].tweet}</td>
+                  <td class="align-middle">
+                    <div class=" container justify-content-center">`
+                    icon = `<i class="fas fa-clock fa-2x"></i>`
+
+                  btn = `</i></div></td>
+                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="displayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
+                  </tr>`
+                  // }
+                  tab += icon
+                  tab += btn
+                  break
+                }
+
+              }
+            }}
       }
       document.getElementById("show_tweets_for_user").innerHTML = tab;
       $('tweets_by_user').modal('show');

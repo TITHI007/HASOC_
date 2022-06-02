@@ -64,6 +64,7 @@ async function displayTweetForAnnotate(tweet_id_) {
           for (comm_key in data.data.tweets[i].comments) {
             console.log(data.data.tweets[i]);
               if ((data.data.tweets[i].comments[comm_key].tweet_id in data.data.tweets[i].finalAnnotation)===true ){
+                if ((data.data.tweets[i].comments[comm_key].replies.length)>0){
                     if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].tweet_id][name] === "SHOF") {
                       innerhtml = `<h4><span class="badge badge-danger">SHOF</span></h4>`
                   } else if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].tweet_id][name] === "CHOF") {
@@ -74,7 +75,7 @@ async function displayTweetForAnnotate(tweet_id_) {
                   }
                   tab += `<br/><li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-primary">
                   <span class="w-90" id="main_tweet" >${data.data.tweets[i].comments[comm_key].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li> `
-                if ((data.data.tweets[i].comments[comm_key].replies.length)>0){
+                
                 for (rep_key in data.data.tweets[i].comments[comm_key].replies) {
                   console.log(data.data.tweets[i]);
                     if ((data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id in data.data.tweets[i].annotations)===true ){
@@ -275,6 +276,7 @@ async function display_tweets_by_user() {
           //console.log(data)
           tab = ``
           for (let i=0;i<total_tweet;i++) {
+            if (data.data.tweets[i].assignedTo.slice(0,2).includes(name)){
             if ((data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)===true){
                   tab += `<tr>
           <td class="align-middle">${data.data.tweets[i].story}</td>
@@ -299,7 +301,57 @@ async function display_tweets_by_user() {
                   tab += btn
               }
 
-          }
+          }}
+          tab+=`<tr><td colspan="5"><h2 align="center">Third Annotation</h2></td></tr>`
+            for (let i=0;i<total_tweet;i++) {
+            if (data.data.tweets[i].assignedTo.slice(2,3).includes(name)){
+              
+              for(let j=0;j<data.data.tweets[i].comments.length;j++){
+                if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments.tweet_id in data.data.tweets[i].finalAnnotation)===false)){
+                  tab += `<tr>
+                  <td class="align-middle">${data.data.tweets[i].story}</td>
+                  <td class="align-middle">${data.data.tweets[i].tweet_id}</td>
+                  <td class="align-middle">${data.data.tweets[i].tweet}</td>
+                  <td class="align-middle">
+                    <div class=" container justify-content-center">`
+                    icon = `<i class="fas fa-clock fa-2x"></i>`
+
+                  btn = `</i></div></td>
+                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="displayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
+                  </tr>`
+                  // }
+                  tab += icon
+                  tab += btn
+                  break
+                }
+
+              }
+            }}
+            tab+=`<tr><td colspan="5"><h2 align="center">Fourth Annotation</h2></td></tr>`
+            for (let i=0;i<total_tweet;i++) {
+            if (data.data.tweets[i].assignedTo.slice(3,4).includes(name)){
+              
+              for(let j=0;j<data.data.tweets[i].comments.length;j++){
+                if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments.tweet_id in data.data.tweets[i].finalAnnotation)===false)){
+                  tab += `<tr>
+                  <td class="align-middle">${data.data.tweets[i].story}</td>
+                  <td class="align-middle">${data.data.tweets[i].tweet_id}</td>
+                  <td class="align-middle">${data.data.tweets[i].tweet}</td>
+                  <td class="align-middle">
+                    <div class=" container justify-content-center">`
+                    icon = `<i class="fas fa-clock fa-2x"></i>`
+
+                  btn = `</i></div></td>
+                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="displayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
+                  </tr>`
+                  // }
+                  tab += icon
+                  tab += btn
+                  break
+                }
+
+              }
+            }}
 
       }
       document.getElementById("show_tweets_for_user").innerHTML = tab;
