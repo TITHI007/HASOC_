@@ -260,6 +260,19 @@ async function display_tweets_by_user() {
           tab = `<h1 class="my-3">No Assigned Tweets.......!</h1>`
       } else {
           //console.log(data)
+           var Comment_activating_flag=true
+          for(let i=0;i<total_tweet;i++){
+              if(data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation){
+                continue
+              }
+              else{
+                Comment_activating_flag=false
+                break
+              }
+          }
+
+          if(Comment_activating_flag===true){
+            
           tab = ``
           for (let i=0;i<total_tweet;i++) {
             if (data.data.tweets[i].assignedTo.slice(0,2).includes(name)){
@@ -291,7 +304,20 @@ async function display_tweets_by_user() {
             tab+=`<tr><td colspan="5"><h2 align="center">Third Annotation</h2></td></tr>`
             for (let i=0;i<total_tweet;i++) {
             if (data.data.tweets[i].assignedTo.slice(2,3).includes(name)){
+
+              var flag=true;
+              for(let j=0;j<data.data.tweets[i].comments.length;j++){
+                if (data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].annotations ){
+                  if(Object.keys(data.data.tweets[i].comments[j][data.data.tweets[i].comments[j].tweet_id]).length===2){
+                  continue
+                }
+                }else{
+                  flag=false
+                  break
+                }
+              }
               
+              if (flag===true){
               for(let j=0;j<data.data.tweets[i].comments.length;j++){
                 if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments.tweet_id in data.data.tweets[i].finalAnnotation)===false)){
                   tab += `<tr>
@@ -311,11 +337,24 @@ async function display_tweets_by_user() {
                   break
                 }
 
-              }
+              }}
             }}
             tab+=`<tr><td colspan="5"><h2 align="center">Fourth Annotation</h2></td></tr>`
             for (let i=0;i<total_tweet;i++) {
             if (data.data.tweets[i].assignedTo.slice(3,4).includes(name)){
+              var flag=true;
+              for(let j=0;j<data.data.tweets[i].comments.length;j++){
+                if (data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].annotations ){
+                  if(Object.keys(data.data.tweets[i].comments[j][data.data.tweets[i].comments[j].tweet_id]).length===3){
+                  continue
+                }
+                }else{
+                  flag=false
+                  break
+                }
+              }
+
+              if(flag===true){
               
               for(let j=0;j<data.data.tweets[i].comments.length;j++){
                 if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments.tweet_id in data.data.tweets[i].finalAnnotation)===false)){
@@ -336,9 +375,12 @@ async function display_tweets_by_user() {
                   break
                 }
 
-              }
+              }}
             }}
+      }else{
+          tab=`<h2>Please complete Main tweet annotations</h2>`
       }
+    }
       document.getElementById("show_tweets_for_user").innerHTML = tab;
       $('tweets_by_user').modal('show');
   } else if (response.status == 401) {
