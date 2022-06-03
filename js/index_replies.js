@@ -290,7 +290,7 @@ async function display_tweets_by_user() {
               }
           }
 
-          // if(Replies_activating_flag===true){
+          if(Replies_activating_flag===true){
           tab = ``
           for (let i=0;i<total_tweet;i++) {
             if (data.data.tweets[i].assignedTo.slice(0,2).includes(name)){
@@ -401,9 +401,9 @@ async function display_tweets_by_user() {
 
               }}
             }}
-        //   }else{
-        //     tab=`<h2>Please complete annotations of comments</h2>`
-        // }
+          }else{
+            tab=`<h2>Please complete annotations of comments</h2>`
+        }
       }
       document.getElementById("show_tweets_for_user").innerHTML = tab;
       $('tweets_by_user').modal('show');
