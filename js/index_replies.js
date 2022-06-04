@@ -17,6 +17,165 @@ async function checkLogin() {
       displayTweetForAnnotate();
   }
 }
+async function tfdisplayTweetForAnnotate(tweet_id_) {
+  var name = localStorage.getItem('name')
+    localStorage.setItem('main_tweet_id_',tweet_id_);
+    
+        // for (let i=0;i<total_tweet;i++){
+        if (tweet_id_ === undefined){
+          tab_1=`<h1>Please select tweet from assigned tweet</h1>`
+          document.getElementById("main_tweet_comments").innerHTML = tab_1;
+        }
+        else{
+          const response = await fetch(proxy + '/users/assigned-tweets?thirdAnnotator=false', {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                "Authorization": 'Bearer '+localStorage.getItem("token")
+            }
+    
+        })
+        if (response.status === 200) {
+            var data = await response.json();
+            const total_tweet =data.data.tweets.length
+            tab_1 = ``
+            var i=data.data.tweets.map((o) => o.tweet_id).indexOf(tweet_id_)
+            console.log(tweet_id_)
+            console.log(i)
+            console.log(data.data.tweets[i].tweet_id)
+			console.log(data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)
+      // if (data.data.tweets[i].assignedTo.slice(0,2).includes(name)){
+			if ((data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)===true ){
+				
+				console.log(data.data.tweets[i].finalAnnotation[data.data.tweets[i].tweet_id])
+				if (data.data.tweets[i].finalAnnotation[data.data.tweets[i].tweet_id] === "HOF") {
+                    innerhtml = `<h4><span class="badge badge-danger">HOF</span></h4>`
+               } else {
+					innerhtml = `<h4><span class="badge badge-success">NOT</span></h4>`
+                }
+                tab_1 += `<li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-primary list-group affix my-3 sticky-top">
+            <span class="w-90" id="main_tweet">${data.data.tweets[i].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li>`
+             
+            for (comm_key in data.data.tweets[i].comments) {
+              console.log(data.data.tweets[i]);
+                if ((data.data.tweets[i].comments[comm_key].tweet_id in data.data.tweets[i].finalAnnotation)===true ){
+                  if ((data.data.tweets[i].comments[comm_key].replies.length)>0){
+                      if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].tweet_id][name] === "SHOF") {
+                        innerhtml = `<h4><span class="badge badge-danger">SHOF</span></h4>`
+                    } else if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].tweet_id][name] === "CHOF") {
+                      innerhtml = `<h4><span class="badge badge-danger">CHOF</span></h4>`
+                    }
+                      else{
+                        innerhtml = `<h4><span class="badge badge-success">NOT</span></h4>`
+                    }
+                    tab += `<br/><li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-primary">
+                    <span class="w-90" id="main_tweet" >${data.data.tweets[i].comments[comm_key].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li> `
+                  
+                  for (rep_key in data.data.tweets[i].comments[comm_key].replies) {
+                    console.log(data.data.tweets[i]);
+                      if ((data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id in data.data.tweets[i].annotations)===true && (data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id in data.data.tweets[i].finalAnnotation)===false){
+              
+                          if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id].hasOwnProperty(name)===true){
+                            //console.log(data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].tweet_id][name])
+                            if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id][name] === "SHOF") {
+                              innerhtml = `<i class="mr-3 fa fa-check" aria-hidden="true"></i>
+                              <label class="btn btn-danger form-check-label mr-3">
+                              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="SHOF" checked>
+                              SHOF
+                            </label>
+                              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="CHOF">
+                              CHOF
+                            </label>
+                              
+                                <label class="btn btn-success form-check-label">
+                              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="NONE"> NONE
+                            </label>`
+                          } else if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id][name] === "CHOF") {
+                            innerhtml = `<i class="mr-3 fa fa-check" aria-hidden="true"></i>
+                            <label class="btn btn-danger form-check-label mr-3">
+                              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="SHOF" >
+                              SHOF
+                            </label>  
+                            <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="CHOF" checked>
+                              CHOF
+                            </label>
+                              
+                                <label class="btn btn-success form-check-label">
+                              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="NONE"> NONE
+                            </label>`
+                          }
+                            else{
+                              innerhtml = `<i class="mr-3 fa fa-check" aria-hidden="true"></i>
+                              
+                              <label class="btn btn-danger form-check-label mr-3">
+                              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="SHOF">
+                              SHOF
+                            </label>
+                            <label class="btn btn-danger form-check-label mr-3">
+                              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="CHOF">
+                              CHOF
+                            </label>
+                                <label class="btn btn-success form-check-label">
+                              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="NONE" checked> NONE
+                            </label>`
+                          }
+                          tab += `<li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-success">
+                          <span class="w-90" id="main_tweet" >${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li> `
+                        }
+                        else{
+                        tab += `<li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-success">
+                  <span class="w-90" id="main_tweet" >${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet}</span>
+                  <div class="btn-group" data-toggle="buttons">
+                     
+                  <label class="btn btn-danger form-check-label mr-3">
+                    <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="SHOF">
+                    SHOF
+                  </label>
+                  <label class="btn btn-danger form-check-label mr-3">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="CHOF">
+                        CHOF
+                      </label> 
+                      <label class="btn btn-success form-check-label">
+                    <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="NONE"> NONE
+                  </label>
+                  </div>
+               </li>`}
+                          
+                      } 
+                      else {
+                          tab+= `<li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-success">
+                      <span class="w-90" id="main_tweet" >${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet}</span>
+                      <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-danger form-check-label mr-3">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="CHOF">
+                        CHOF
+                      </label>
+                          <label class="btn btn-danger form-check-label mr-3">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="SHOF">
+                        SHOF
+                      </label>
+                          <label class="btn btn-success form-check-label">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id}" value="NONE"> NONE
+                      </label>
+                      </div>
+                   </li>`
+                      }        
+      
+               }  
+         }
+         }
+        //  tab +=`<br/>`
+        
+      }document.getElementById("comments_replies").innerHTML = tab;
+    
+    }
+               
+        
+        tab_1+=`<br/>`
+        
+    }
+}}
+
 
 
 async function displayTweetForAnnotate(tweet_id_) {
@@ -290,7 +449,7 @@ async function display_tweets_by_user() {
               }
           }
 
-          if(Replies_activating_flag===true){
+          // if(Replies_activating_flag===true){
           tab = ``
           for (let i=0;i<total_tweet;i++) {
             if (data.data.tweets[i].assignedTo.slice(0,2).includes(name)){
@@ -323,22 +482,22 @@ async function display_tweets_by_user() {
             for (let i=0;i<total_tweet;i++) {
             if (data.data.tweets[i].assignedTo.slice(2,3).includes(name)){
 
-              var flag=true;
-              for(let j=0;j<data.data.tweets[i].comments.length;j++){
-                if (data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].annotations ){
-                  if(Object.keys(data.data.tweets[i].annotations[data.data.tweets[i].comments[j].tweet_id]).length===2){
-                  continue
-                }else{
-                  flag=false
-                  break
-                }
-                }else{
-                  flag=false
-                  break
-                }
-              }
+              // var flag=true;
+              // for(let j=0;j<data.data.tweets[i].comments.length;j++){
+              //   if (data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].annotations ){
+              //     if(Object.keys(data.data.tweets[i].annotations[data.data.tweets[i].comments[j].tweet_id]).length===2){
+              //     continue
+              //   }else{
+              //     flag=false
+              //     break
+              //   }
+              //   }else{
+              //     flag=false
+              //     break
+              //   }
+              // }
               
-              if (flag=== true){
+              // if (flag=== true){
               for(let j=0;j<data.data.tweets[i].comments.length;j++){
                 if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments.tweet_id in data.data.tweets[i].finalAnnotation)===false)){
                   tab += `<tr>
@@ -350,7 +509,7 @@ async function display_tweets_by_user() {
                     icon = `<i class="fas fa-clock fa-2x"></i>`
 
                   btn = `</i></div></td>
-                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="displayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
+                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="tfdisplayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
                   </tr>`
                   // }
                   tab += icon
@@ -358,29 +517,32 @@ async function display_tweets_by_user() {
                   break
                 }
 
-              }}
+              }
+            // }
             }}
             tab+=`<tr><td colspan="5"><h2 align="center">Fourth Annotation</h2></td></tr>`
             for (let i=0;i<total_tweet;i++) {
             if (data.data.tweets[i].assignedTo.slice(3,4).includes(name)){
 
-              var flag=true;
-              for(let j=0;j<data.data.tweets[i].comments.length;j++){
-                if (data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].annotations ){
-                  if(Object.keys(data.data.tweets[i].annotations[data.data.tweets[i].comments[j].tweet_id]).length===4){
-                  continue
-                }else{
-                  flag=false
-                  break
-                }
-                }else{
-                  flag=false
-                  break
-                }
-              }
+              // var flag=true;
+              // for(let j=0;j<data.data.tweets[i].comments.length;j++){
+              //   if (data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].annotations ){
+              //     if(Object.keys(data.data.tweets[i].annotations[data.data.tweets[i].comments[j].tweet_id]).length===4){
+              //     continue
+              //   }else{
+              //     flag=false
+              //     break
+              //   }
+              //   }else{
+              //     flag=false
+              //     break
+              //   }
+              // }
 
-              if(flag===true){
+              // if(flag===true){
               for(let j=0;j<data.data.tweets[i].comments.length;j++){
+                if(data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].annotations){
+                  if(Object.keys(data.data.tweets[i].annotations[data.data.tweets[i].comments[j].tweet_id]).length===3){
                 if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments.tweet_id in data.data.tweets[i].finalAnnotation)===false)){
                   tab += `<tr>
                   <td class="align-middle">${data.data.tweets[i].story}</td>
@@ -391,7 +553,7 @@ async function display_tweets_by_user() {
                     icon = `<i class="fas fa-clock fa-2x"></i>`
 
                   btn = `</i></div></td>
-                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="displayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
+                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="tfdisplayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
                   </tr>`
                   // }
                   tab += icon
@@ -399,11 +561,10 @@ async function display_tweets_by_user() {
                   break
                 }
 
-              }}
+              }}}
+            // }
             }}
-          }else{
-            tab=`<h2>Please complete annotations of comments</h2>`
-        }
+         
       }
       document.getElementById("show_tweets_for_user").innerHTML = tab;
       $('tweets_by_user').modal('show');
