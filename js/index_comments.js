@@ -19,10 +19,10 @@ async function checkLogin() {
 }
 
 async function tfdisplayTweetForAnnotate(tweet_id_) {
+  console.log("third and fourth annotator")
   var name = localStorage.getItem('name')
-    localStorage.setItem('main_tweet_id_',tweet_id_);
+  localStorage.setItem('main_tweet_id_',tweet_id_);
     
-        // for (let i=0;i<total_tweet;i++){
         if (tweet_id_ === undefined){
           tab_1=`<h1>Please select tweet from assigned tweet</h1>`
           document.getElementById("main_tweet_comments").innerHTML = tab_1;
@@ -44,23 +44,53 @@ async function tfdisplayTweetForAnnotate(tweet_id_) {
             console.log(tweet_id_)
             console.log(i)
             console.log(data.data.tweets[i].tweet_id)
-			console.log(data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)
-      // if (data.data.tweets[i].assignedTo.slice(0,2).includes(name)){
-			if ((data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)===true ){
-				
-				console.log(data.data.tweets[i].finalAnnotation[data.data.tweets[i].tweet_id])
-				if (data.data.tweets[i].finalAnnotation[data.data.tweets[i].tweet_id] === "HOF") {
-                    innerhtml = `<h4><span class="badge badge-danger">HOF</span></h4>`
-               } else {
-					innerhtml = `<h4><span class="badge badge-success">NOT</span></h4>`
-                }
-                tab_1 += `<li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-primary list-group affix my-3 sticky-top">
-            <span class="w-90" id="main_tweet">${data.data.tweets[i].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li>`
-             
+			      console.log(data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)
+            if ((data.data.tweets[i].tweet_id in data.data.tweets[i].finalAnnotation)===true ){
+              if (data.data.tweets[i].finalAnnotation[data.data.tweets[i].tweet_id] === "HOF") {
+                        innerhtml = `<h4><span class="badge badge-danger">HOF</span></h4>`
+              } else {
+                        innerhtml = `<h4><span class="badge badge-success">NOT</span></h4>`
+              }
+                    tab_1 += `<li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-primary list-group affix my-3 sticky-top">
+                <span class="w-90" id="main_tweet">${data.data.tweets[i].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li>`
+         
+            }
             for (comm_key in data.data.tweets[i].comments) {
+              console.log(data.data.tweets[i]);
                 if ((data.data.tweets[i].comments[comm_key].tweet_id in data.data.tweets[i].conflictedTweets)===true && (data.data.tweets[i].comments[comm_key].tweet_id in data.data.tweets[i].finalAnnotation)===false){
+                  console.log("Remove conflict")
+
+                  if ((data.data.tweets[i].comments[comm_key].tweet_id in data.data.tweets[i].annotations)===true){
 				
-                        innerhtml = `
+                    if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].tweet_id].hasOwnProperty(name)===true){
+                      console.log(data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].tweet_id][name])
+                      if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].tweet_id][name] === "SHOF") {
+                        innerhtml = `<i class="mr-3 fa fa-check" aria-hidden="true"></i><label class="btn btn-danger form-check-label mr-3">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="SHOF" checked>
+                        SHOF
+                      </label>
+                        <label class="btn btn-danger form-check-label mr-3">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="CHOF" >
+                        CHOF
+                      </label>
+                          <label class="btn btn-success form-check-label">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="NONE"> NONE
+                      </label>`
+                    } else if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].tweet_id][name] === "CHOF") {
+                      innerhtml = `<i class="mr-3 fa fa-check" aria-hidden="true"></i><label class="btn btn-danger form-check-label mr-3">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="SHOF" >
+                        SHOF
+                      </label>
+                        <label class="btn btn-danger form-check-label mr-3">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="CHOF" checked>
+                        CHOF
+                      </label>
+                          <label class="btn btn-success form-check-label">
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="NONE"> NONE
+                      </label>`
+                    }
+                      else{
+                        innerhtml = `<i class="mr-3 fa fa-check" aria-hidden="true"></i>
                         <label class="btn btn-danger form-check-label mr-3">
                         <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="SHOF">
                         SHOF
@@ -70,19 +100,39 @@ async function tfdisplayTweetForAnnotate(tweet_id_) {
                         CHOF
                       </label>
                           <label class="btn btn-success form-check-label">
-                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="NONE"> NONE
+                        <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="NONE" checked> NONE
                       </label>`
                     }
                     tab_1 += `<li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-success">
                     <span class="w-90" id="main_tweet" >${data.data.tweets[i].comments[comm_key].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li> `
                   }
-                  
-        
-        tab_1+=`<br/>`
-        
-    }
-         document.getElementById("main_tweet_comments").innerHTML = tab_1;
-}}}
+                  else{
+                  tab_1 += `<li class="list-group-item d-flex justify-content-between align-items-center input-group-prepend list-group-item-success">
+            <span class="w-90" id="main_tweet" >${data.data.tweets[i].comments[comm_key].tweet}</span>
+            <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-danger form-check-label mr-3">
+                  <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="SHOF">
+                  SHOF
+                </label>    
+            <label class="btn btn-danger form-check-label mr-3">
+              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="CHOF">
+              CHOF
+            </label>
+                <label class="btn btn-success form-check-label">
+              <input class="form-check-input" onchange="addLabel(this.name,this.value)" type="radio" name="${data.data.tweets[i].comments[comm_key].tweet_id}" value="NONE"> NONE
+            </label>
+            </div>
+         </li>`}
+                    
+                } 
+                
+                }
+            }
+
+          }
+        }
+        document.getElementById("main_tweet_comments").innerHTML = tab_1;
+}
 
 async function displayTweetForAnnotate(tweet_id_) {
     //document.getElementById("submitlabels").style.display = 'block';
@@ -427,7 +477,7 @@ async function display_tweets_by_user() {
               for(let j=0;j<data.data.tweets[i].comments.length;j++){
                 if(data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].annotations){
                 if(Object.keys(data.data.tweets[i].annotations[data.data.tweets[i].comments[j].tweet_id]).length===3){
-                if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments.tweet_id in data.data.tweets[i].finalAnnotation)===false)){
+                if (((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].conflictedTweets)===true) && ((data.data.tweets[i].comments[j].tweet_id in data.data.tweets[i].finalAnnotation)===false)){
                   tab += `<tr>
                   <td class="align-middle">${data.data.tweets[i].story}</td>
                   <td class="align-middle">${data.data.tweets[i].tweet_id}</td>
