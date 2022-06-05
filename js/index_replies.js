@@ -18,7 +18,7 @@ async function checkLogin() {
   }
   document.getElementById("username").innerHTML = "Welcome, " + name_;
 }
-async function tfdisplayTweetForAnnotate(tweet_id_) {
+async function tfdisplayTweetForAnnotate(tweet_id_,n) {
   // console.log("third and fourth annotator")
   var name = localStorage.getItem('name')
   localStorage.setItem('main_tweet_id_',tweet_id_);
@@ -65,8 +65,11 @@ async function tfdisplayTweetForAnnotate(tweet_id_) {
               if ((data.data.tweets[i].comments[comm_key].tweet_id in data.data.tweets[i].finalAnnotation)===true ){
                 // console.log("in")
                 if(data.data.tweets[i].comments[comm_key].replies.length>0)
-                {for (let rep_key=0;rep_key<data.data.tweets[i].comments[comm_key].replies.length;rep_key++){
+                {tab_rep=``
+                  for (let rep_key=0;rep_key<data.data.tweets[i].comments[comm_key].replies.length;rep_key++){
                   // console.log(data.data.tweets[i].comments[comm_key].tweet_id);
+                  if(data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id in data.data.tweets[i].annotations){
+                  if(Object.keys(data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id]).length===n){
                   if ((data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id in data.data.tweets[i].conflictedTweets)===true && (data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id in data.data.tweets[i].finalAnnotation)===false){
                       if (data.data.tweets[i].annotations[data.data.tweets[i].comments[comm_key].replies[rep_key].tweet_id][name] === "SHOF") {
                         innerhtml = `<i class="mr-3 fa fa-check" aria-hidden="true"></i>
@@ -134,6 +137,10 @@ async function tfdisplayTweetForAnnotate(tweet_id_) {
                     
 
 
+                  
+                  }}
+                      // console.log("Remove conflict")
+                     
                   }
                   if (tab_rep !== ``){
                     if(data.data.tweets[i].finalAnnotation[data.data.tweets[i].comments[comm_key].tweet_id] === "SHOF"){
@@ -148,15 +155,16 @@ async function tfdisplayTweetForAnnotate(tweet_id_) {
                     <span class="w-90" id="main_tweet" >${data.data.tweets[i].comments[comm_key].tweet}</span><div class="btn-group" data-toggle="buttons">` + innerhtml + `</div></li> `
                     tab+=tab_rep
                   }
-                      // console.log("Remove conflict")
-                     
-                  }
                 }}
                 // console.log("Final comments")
               }
-          }document.getElementById("comments_replies").innerHTML = tab;
+          }}
       
       }
+      if(tab===``){
+        tab=`<h2>Please complete annotations of comments</h2>`
+     }
+      document.getElementById("comments_replies").innerHTML = tab;
       
 }
 // }
@@ -459,13 +467,13 @@ async function display_tweets_by_user() {
       //     <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="displayTweetForAnnotate(this.id)" data-dismiss="modal">View</button></td>
       // </tr>`
       //             } else {
-                      icon = `<i class="fas fa-clock fa-2x"></i>`
+                      // icon = `<i class="fas fa-clock fa-2x"></i>`
 
                       btn = `</div></td>
                   <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="displayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
               </tr>`
                   // }
-                  tab += icon
+                  // tab += icon
                   tab += btn
               }
 
@@ -502,13 +510,13 @@ async function display_tweets_by_user() {
                   <td class="align-middle">${data.data.tweets[i].tweet}</td>
                   <td class="align-middle">
                     <div class=" container justify-content-center">`
-                    icon = `<i class="fas fa-clock fa-2x"></i>`
+                    // icon = `<i class="fas fa-clock fa-2x"></i>`
 
-                  btn = `</i></div></td>
-                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="tfdisplayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
+                  btn = `</div></td>
+                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="tfdisplayTweetForAnnotate(this.id,2)" data-dismiss="modal">Annotate</button></td>
                   </tr>`
                   // }
-                  tab += icon
+                  // tab += icon
                   tab += btn
                   flag=false
                   break
@@ -558,13 +566,13 @@ async function display_tweets_by_user() {
                   <td class="align-middle">${data.data.tweets[i].tweet}</td>
                   <td class="align-middle">
                     <div class=" container justify-content-center">`
-                    icon = `<i class="fas fa-clock fa-2x"></i>`
+                    // icon = `<i class="fas fa-clock fa-2x"></i>`
 
                   btn = `</div></td>
-                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="tfdisplayTweetForAnnotate(this.id)" data-dismiss="modal">Annotate</button></td>
+                  <td class="align-middle"><button class="btn btn-info" id="${data.data.tweets[i].tweet_id}" onclick="tfdisplayTweetForAnnotate(this.id,3)" data-dismiss="modal">Annotate</button></td>
                   </tr>`
                   // }
-                  tab += icon
+                  // tab += icon
                   tab += btn
                   flag=false
                   break
